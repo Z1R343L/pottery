@@ -34,7 +34,7 @@ def test_init(redis: Redis) -> None:
 
 
 def test_keyexistserror(redis: Redis) -> None:
-    fruits = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+    fruits = {'apple', 'pear', 'orange', 'banana'}
     basket = RedisSet(fruits, redis=redis, key='pottery:basket')
     basket  # Workaround for Pyflakes.  :-(
     with pytest.raises(KeyExistsError):
@@ -42,11 +42,11 @@ def test_keyexistserror(redis: Redis) -> None:
 
 
 def test_basic_usage(redis: Redis) -> None:
-    fruits = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+    fruits = {'apple', 'pear', 'orange', 'banana'}
     basket = RedisSet(fruits, redis=redis)
     assert basket == {'orange', 'banana', 'pear', 'apple'}
     assert 'orange' in basket
-    assert not 'crabgrass' in basket
+    assert 'crabgrass' not in basket
 
 
 def test_contains_many_metasyntactic_variables(redis: Redis) -> None:
@@ -70,17 +70,17 @@ def test_contains_many_uuids(redis: Redis) -> None:
 
 
 def test_add(redis: Redis) -> None:
-    fruits = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+    fruits = {'apple', 'pear', 'orange', 'banana'}
     basket = RedisSet(fruits, redis=redis)
     basket.add('tomato')
-    assert basket == {'apple', 'orange', 'apple', 'pear', 'orange', 'banana', 'tomato'}
+    assert basket == {'apple', 'pear', 'orange', 'banana', 'tomato'}
 
 
 def test_discard(redis: Redis) -> None:
-    fruits = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana', 'tomato'}
+    fruits = {'apple', 'pear', 'orange', 'banana', 'tomato'}
     basket = RedisSet(fruits, redis=redis)
     basket.discard('tomato')
-    assert basket == {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+    assert basket == {'apple', 'pear', 'orange', 'banana'}
 
 
 def test_repr(redis: Redis) -> None:
@@ -95,7 +95,7 @@ def test_repr(redis: Redis) -> None:
 
 
 def test_pop(redis: Redis) -> None:
-    fruits = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+    fruits = {'apple', 'pear', 'orange', 'banana'}
     basket = RedisSet(fruits, redis=redis)
     for _ in range(len(fruits)):
         fruit = basket.pop()
@@ -362,7 +362,7 @@ def test_difference_update_with_range_and_set(redis: Redis) -> None:
 
 def test_membership_for_non_jsonifyable_element(redis: Redis) -> None:
     redis_set = RedisSet(redis=redis)
-    assert not BaseException in redis_set
+    assert BaseException not in redis_set
 
 
 def test_populate_with_empty_iterable(redis: Redis) -> None:

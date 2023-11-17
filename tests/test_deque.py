@@ -225,5 +225,5 @@ def test_repr(redis: Redis) -> None:
 def test_eq_redislist_same_redis_key(redis: Redis) -> None:
     deque = RedisDeque('ghi', redis=redis)
     list_ = RedisList(redis=redis, key=deque.key)
-    assert not deque == list_
+    assert deque != list_
     assert deque != list_

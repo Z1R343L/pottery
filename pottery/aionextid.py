@@ -69,8 +69,7 @@ class AIONextID(Scripts, AIOPrimitive):
         raise QuorumNotAchieved(self.key, self.masters)
 
     async def __get_current_id(self, master: AIORedis) -> Any | None:
-        current_id = await master.get(self.key)
-        return current_id
+        return await master.get(self.key)
 
     async def __set_current_id(self, master: AIORedis, value: int) -> bool:
         current_id: int | None = await self._set_id_script(  # type: ignore

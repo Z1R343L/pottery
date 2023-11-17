@@ -63,8 +63,7 @@ class RedisSet(Container, Iterable_, collections.abc.MutableSet):
                   pipeline: Pipeline,
                   iterable: Iterable[JSONTypes] = tuple(),
                   ) -> None:
-        encoded_values = {self._encode(value) for value in iterable}
-        if encoded_values:
+        if encoded_values := {self._encode(value) for value in iterable}:
             pipeline.multi()  # Available since Redis 1.2.0
             pipeline.sadd(self.key, *encoded_values)  # Available since Redis 1.0.0
 
@@ -110,8 +109,7 @@ class RedisSet(Container, Iterable_, collections.abc.MutableSet):
             InefficientAccessWarning,
         )
         encoded_values = self.redis.sscan_iter(self.key)  # Available since Redis 2.8.0
-        values = (self._decode(value) for value in encoded_values)
-        yield from values
+        yield from (self._decode(value) for value in encoded_values)
 
     def __len__(self) -> int:
         'Return the number of elements in the RedisSet.  O(1)'
@@ -145,8 +143,7 @@ class RedisSet(Container, Iterable_, collections.abc.MutableSet):
         encoded_value = self.redis.spop(self.key)  # Available since Redis 1.0.0
         if encoded_value is None:
             raise KeyError('pop from an empty set')
-        value = self._decode(cast(bytes, encoded_value))
-        return value
+        return self._decode(cast(bytes, encoded_value))
 
     # From collections.abc.MutableSet:
     def remove(self, value: JSONTypes) -> None:
@@ -202,8 +199,7 @@ class RedisSet(Container, Iterable_, collections.abc.MutableSet):
             method = getattr(self.redis, redis_method)
             keys = (self.key, *(cast(RedisSet, other).key for other in others))
             encoded_values = method(*keys)
-            values = {self._decode(cast(bytes, v)) for v in encoded_values}
-            return values
+            return {self._decode(cast(bytes, v)) for v in encoded_values}
         with self._watch(*others):
             set_ = self.__to_set()
             method = getattr(set_, set_method)
@@ -281,10 +277,9 @@ class RedisSet(Container, Iterable_, collections.abc.MutableSet):
             method(*keys)
         else:
             with self._watch(*others) as pipeline:
-                encoded_values = set()
-                for value in itertools.chain(*others):
-                    encoded_values.add(self._encode(value))
-                if encoded_values:
+                if encoded_values := {
+                    self._encode(value) for value in itertools.chain(*others)
+                }:
                     pipeline.multi()  # Available since Redis 1.2.0
                     method = getattr(pipeline, pipeline_method)
                     method(self.key, *encoded_values)

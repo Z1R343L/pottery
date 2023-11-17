@@ -52,7 +52,7 @@ async def test_extend(aioredlock: AIORedlock) -> None:
     with pytest.raises(ExtendUnlockedLock):
         await aioredlock.extend()
     assert await aioredlock.acquire()
-    for extension_num in range(Redlock._NUM_EXTENSIONS):
+    for _ in range(Redlock._NUM_EXTENSIONS):
         await aioredlock.extend()
     with pytest.raises(TooManyExtensions):
         await aioredlock.extend()
@@ -69,7 +69,7 @@ async def test_context_manager_extend(aioredlock: AIORedlock) -> None:
     with pytest.raises(ExtendUnlockedLock):
         await aioredlock.extend()
     async with aioredlock:
-        for extension_num in range(Redlock._NUM_EXTENSIONS):
+        for _ in range(Redlock._NUM_EXTENSIONS):
             await aioredlock.extend()
         with pytest.raises(TooManyExtensions):
             await aioredlock.extend()

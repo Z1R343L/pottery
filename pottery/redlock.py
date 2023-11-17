@@ -285,15 +285,15 @@ class Redlock(Scripts, Primitive):
         return bool(acquired)
 
     def __acquired_master(self, master: Redis) -> int:
-        if self._uuid:
-            ttl: int = cast(Script, self._acquired_script)(
+        return (
+            cast(Script, self._acquired_script)(
                 keys=(self.key,),
                 args=(self._uuid,),
                 client=master,
             )
-        else:
-            ttl = 0
-        return ttl
+            if self._uuid
+            else 0
+        )
 
     def __extend_master(self, master: Redis) -> bool:
         auto_release_time_ms = int(self.auto_release_time * 1000)
@@ -621,11 +621,10 @@ class Redlock(Scripts, Primitive):
             >>> bool(printer_lock.locked())
             False
         '''
-        acquired = self.__acquire(
+        if acquired := self.__acquire(
             blocking=self.context_manager_blocking,
             timeout=self.context_manager_timeout,
-        )
-        if acquired:
+        ):
             return self
         raise QuorumNotAchieved(self.key, self.masters)
 

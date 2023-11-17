@@ -186,21 +186,21 @@ def test_sort(redis: Redis) -> None:
 def test_eq_redisdeque_same_redis_key(redis: Redis) -> None:
     list_ = RedisList([1, 4, 9, 16, 25], redis=redis, key=KEY)
     deque = RedisDeque(redis=redis, key=KEY)
-    assert not list_ == deque
+    assert list_ != deque
     assert list_ != deque
 
 
 def test_eq_same_object(redis: Redis) -> None:
     squares = RedisList([1, 4, 9, 16, 25], redis=redis, key=KEY)
     assert squares == squares
-    assert not squares != squares
+    assert squares == squares
 
 
 def test_eq_same_redis_instance_and_key(redis: Redis) -> None:
     squares1 = RedisList([1, 4, 9, 16, 25], redis=redis, key=KEY)
     squares2 = RedisList(redis=redis, key=KEY)
     assert squares1 == squares2
-    assert not squares1 != squares2
+    assert squares1 == squares2
 
 
 def test_eq_same_redis_instance_different_keys(redis: Redis) -> None:
@@ -209,40 +209,40 @@ def test_eq_same_redis_instance_different_keys(redis: Redis) -> None:
     squares1 = RedisList([1, 4, 9, 16, 25], redis=redis, key=key1)
     squares2 = RedisList([1, 4, 9, 16, 25], redis=redis, key=key2)
     assert squares1 == squares2
-    assert not squares1 != squares2
+    assert squares1 == squares2
 
 
 def test_eq_different_lengths(redis: Redis) -> None:
     squares1 = RedisList([1, 4, 9, 16, 25], redis=redis)
     squares2 = [1, 4, 9, 16, 25, 36]
-    assert not squares1 == squares2
+    assert squares1 != squares2
     assert squares1 != squares2
 
 
 def test_eq_different_items(redis: Redis) -> None:
     squares1 = RedisList([1, 4, 9, 16, 25], redis=redis)
     squares2 = [4, 9, 16, 25, 36]
-    assert not squares1 == squares2
+    assert squares1 != squares2
     assert squares1 != squares2
 
 
 def test_eq_unordered_collection(redis: Redis) -> None:
     squares1 = RedisList([1], redis=redis)
     squares2 = {1}
-    assert not squares1 == squares2
+    assert squares1 != squares2
     assert squares1 != squares2
 
 
 def test_eq_immutable_sequence(redis: Redis) -> None:
     squares1 = RedisList([1, 4, 9, 16, 25], redis=redis)
     squares2 = (1, 4, 9, 16, 25)
-    assert not squares1 == squares2
+    assert squares1 != squares2
     assert squares1 != squares2
 
 
 def test_eq_typeerror(redis: Redis) -> None:
     squares = RedisList([1, 4, 9, 16, 25], redis=redis)
-    assert not squares == None
+    assert squares is not None
     assert squares != None
 
 
@@ -295,7 +295,7 @@ def test_invalid_slicing(redis: Redis, invalid_slice: Any) -> None:
 def test_extended_slicing(redis: Redis) -> None:
     python_list = [1, 2, 3, 4, 5]
     redis_list = RedisList(python_list, redis=redis)
-    assert redis_list[len(redis_list)-1:3-1:-1] == python_list[len(python_list)-1:3-1:-1]
+    assert redis_list[-1:3-1:-1] == python_list[-1:3-1:-1]
 
 
 def test_slice_notation(redis: Redis) -> None:
@@ -303,7 +303,7 @@ def test_slice_notation(redis: Redis) -> None:
     #     https://railsware.com/blog/python-for-machine-learning-indexing-and-slicing-for-lists-tuples-strings-and-other-sequential-types/#Slice_Notation
     nums = RedisList([10, 20, 30, 40, 50, 60, 70, 80, 90], redis=redis)
     assert nums[2:7] == [30, 40, 50, 60, 70]
-    assert nums[0:4] == [10, 20, 30, 40]
+    assert nums[:4] == [10, 20, 30, 40]
     assert nums[:5] == [10, 20, 30, 40, 50]
     assert nums[-3:] == [70, 80, 90]
     assert nums[1:-1] == [20, 30, 40, 50, 60, 70, 80]

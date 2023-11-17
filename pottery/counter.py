@@ -67,15 +67,11 @@ class RedisCounter(RedisDict, collections.Counter):
                 dict_[key] = value + sign
 
         for key, value in kwargs.items():
-            if dict_.get(key, 0) == 0:
-                original = self[key]
-            else:  # pragma: no cover
-                original = dict_[key]
+            original = self[key] if dict_.get(key, 0) == 0 else dict_[key]
             dict_[key] = original + sign * value
 
         dict_ = {key: self[key] + value for key, value in dict_.items()}
-        encoded_dict = self._encode_dict(dict_)
-        if encoded_dict:
+        if encoded_dict := self._encode_dict(dict_):
             pipeline.multi()  # Available since Redis 1.2.0
             # Available since Redis 2.0.0:
             pipeline.hset(self.key, mapping=encoded_dict)  # type: ignore
@@ -193,11 +189,11 @@ class RedisCounter(RedisDict, collections.Counter):
             encoded_to_del = {self._encode(k) for k in to_del}
             if encoded_to_set or encoded_to_del:
                 pipeline.multi()  # Available since Redis 1.2.0
-                if encoded_to_set:
-                    # Available since Redis 2.0.0:
-                    pipeline.hset(self.key, mapping=encoded_to_set)  # type: ignore
-                if encoded_to_del:
-                    pipeline.hdel(self.key, *encoded_to_del)  # Available since Redis 2.0.0
+            if encoded_to_set:
+                # Available since Redis 2.0.0:
+                pipeline.hset(self.key, mapping=encoded_to_set)  # type: ignore
+            if encoded_to_del:
+                pipeline.hdel(self.key, *encoded_to_del)  # Available since Redis 2.0.0
             return self
 
     def __iadd__(self, other: Counter[JSONTypes]) -> Counter[JSONTypes]:  # type: ignore

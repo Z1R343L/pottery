@@ -36,8 +36,7 @@ def modules() -> Generator[ModuleType, None, None]:
         parts = list(relative_path.parts)
         parts[-1] = source_file.stem
         module_name = '.'.join(parts)
-        module = importlib.import_module(module_name)
-        yield module
+        yield importlib.import_module(module_name)
 
 
 @pytest.mark.parametrize('module', modules())

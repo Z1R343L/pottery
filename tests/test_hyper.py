@@ -120,7 +120,7 @@ def test_contains_many_uuids(redis: Redis) -> None:
 
 def test_membership_for_non_jsonifyable_element(redis: Redis) -> None:
     hll = HyperLogLog(redis=redis)
-    assert not BaseException in hll  # type: ignore
+    assert BaseException not in hll
 
 
 def test_repr(redis: Redis) -> None:

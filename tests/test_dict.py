@@ -85,7 +85,7 @@ def test_basic_usage(redis: Redis) -> None:
     assert tel == {'guido': 4127, 'irv': 4127, 'jack': 4098}
     assert sorted(tel) == ['guido', 'irv', 'jack']
     assert 'guido' in tel
-    assert not 'jack' not in tel
+    assert 'jack' in tel
 
 
 def test_init_with_key_value_pairs(redis: Redis) -> None:
@@ -203,12 +203,12 @@ def test_key_membership(redis: Redis) -> None:
     a = RedisDict(redis=redis, one=1, two=2, three=3)
     assert 'one' in a
     assert 'four' not in a
-    assert not 'four' in a
+    assert 'four' not in a
     a['four'] = 4
     assert 'four' in a
     del a['four']
     assert 'four' not in a
-    assert not 'four' in a
+    assert 'four' not in a
 
 
 def test_clear(redis: Redis) -> None:
@@ -267,7 +267,7 @@ def test_values(redis: Redis) -> None:
 
 def test_membership_for_non_jsonifyable_element(redis: Redis) -> None:
     redis_dict = RedisDict(redis=redis)
-    assert not BaseException in redis_dict
+    assert BaseException not in redis_dict
 
 
 def test_json_dumps(redis: Redis) -> None:
