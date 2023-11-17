@@ -63,12 +63,7 @@ class RedisDeque(RedisList, collections.deque):  # type: ignore
                   iterable: Iterable[JSONTypes] = tuple(),
                   ) -> None:
         if self.maxlen is not None:
-            if self.maxlen:
-                iterable = tuple(iterable)[-self.maxlen:]
-            else:
-                # self.maxlen == 0.  Populate the RedisDeque with an empty
-                # iterable.
-                iterable = tuple()
+            iterable = tuple(iterable)[-self.maxlen:] if self.maxlen else tuple()
         super()._populate(pipeline, iterable)
 
     @property
@@ -184,7 +179,7 @@ class RedisDeque(RedisList, collections.deque):  # type: ignore
         )
         encoded_values = self.redis.lrange(self.key, 0, -1)  # Available since Redis 1.0.0
         values = [self._decode(value) for value in encoded_values]
-        repr = self.__class__.__qualname__ + '(' + str(values)
+        repr = f'{self.__class__.__qualname__}({values}'
         if self.maxlen is not None:
             repr += f', maxlen={self.maxlen}'
         repr += ')'

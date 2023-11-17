@@ -75,8 +75,7 @@ class RedisDict(Container, Iterable_, collections.abc.MutableMapping):
             arg = arg.items()
         items = itertools.chain(arg, kwargs.items())
         dict_ = dict(items)
-        encoded_dict = self.__encode_dict(dict_)
-        if encoded_dict:
+        if encoded_dict := self.__encode_dict(dict_):
             if len(encoded_dict) > 1:
                 warnings.warn(
                     cast(str, InefficientAccessWarning.__doc__),
@@ -92,11 +91,9 @@ class RedisDict(Container, Iterable_, collections.abc.MutableMapping):
     __populate = _populate
 
     def _encode_dict(self, dict_: Mapping[JSONTypes, JSONTypes]) -> Dict[str, str]:
-        encoded_dict = {
-            self._encode(key): self._encode(value)
-            for key, value in dict_.items()
+        return {
+            self._encode(key): self._encode(value) for key, value in dict_.items()
         }
-        return encoded_dict
 
     __encode_dict = _encode_dict
 
@@ -108,8 +105,7 @@ class RedisDict(Container, Iterable_, collections.abc.MutableMapping):
         encoded_value = self.redis.hget(self.key, encoded_key)  # Available since Redis 2.0.0
         if encoded_value is None:
             raise KeyError(key)
-        value = self._decode(encoded_value)
-        return value
+        return self._decode(encoded_value)
 
     def __setitem__(self, key: JSONTypes, value: JSONTypes) -> None:
         'd.__setitem__(key, value) <==> d[key] = value.  O(1)'
@@ -129,8 +125,7 @@ class RedisDict(Container, Iterable_, collections.abc.MutableMapping):
             InefficientAccessWarning,
         )
         encoded_items = self.redis.hscan_iter(self.key)  # Available since Redis 2.8.0
-        keys = (self._decode(key) for key, _ in encoded_items)
-        yield from keys
+        yield from (self._decode(key) for key, _ in encoded_items)
 
     def __len__(self) -> int:
         'Return the number of items in the RedisDict.  O(1)'
@@ -166,10 +161,9 @@ class RedisDict(Container, Iterable_, collections.abc.MutableMapping):
                 cast(str, InefficientAccessWarning.__doc__),
                 InefficientAccessWarning,
             )
-        dict_ = {
+        return {
             self._decode(encoded_key): self._decode(encoded_value)
             for encoded_key, encoded_value in encoded_items
         }
-        return dict_
 
     __to_dict = to_dict

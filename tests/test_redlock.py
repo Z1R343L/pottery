@@ -113,7 +113,7 @@ class TestRedlock:
         with pytest.raises(ExtendUnlockedLock):
             redlock.extend()
         assert redlock.acquire()
-        for extension_num in range(Redlock._NUM_EXTENSIONS):
+        for _ in range(Redlock._NUM_EXTENSIONS):
             redlock.extend()
         with pytest.raises(TooManyExtensions):
             redlock.extend()

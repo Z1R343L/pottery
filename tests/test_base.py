@@ -91,8 +91,8 @@ class TestCommon:
         assert raj == raj
         assert raj == nilika
         assert raj == {'hobby': 'music', 'vegetarian': True}
-        assert not raj == luvh
-        assert not raj == None
+        assert raj != luvh
+        assert raj is not None
 
     @staticmethod
     def test_ne(redis: Redis) -> None:
@@ -100,9 +100,9 @@ class TestCommon:
         nilika = RedisDict(redis=redis, key='pottery:nilika', hobby='music', vegetarian=True)
         luvh = RedisDict(redis=redis, key='luvh', hobby='bullying', vegetarian=False)
 
-        assert not raj != raj
-        assert not raj != nilika
-        assert not raj != {'hobby': 'music', 'vegetarian': True}
+        assert raj == raj
+        assert raj == nilika
+        assert raj == {'hobby': 'music', 'vegetarian': True}
         assert raj != luvh
         assert raj != None
 

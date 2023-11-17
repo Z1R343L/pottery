@@ -103,8 +103,7 @@ class RedisSimpleQueue(Container):
         with ContextTimer() as timer:
             while True:
                 try:
-                    item = self.__remove_and_return(redis_block)
-                    return item
+                    return self.__remove_and_return(redis_block)
                 except (WatchError, IndexError):
                     if not block or timer.elapsed() / 1000 >= (timeout or 0):
                         raise QueueEmptyError(redis=self.redis, key=self.key)
@@ -129,8 +128,7 @@ class RedisSimpleQueue(Container):
             pipeline.multi()  # Available since Redis 1.2.0
             pipeline.xdel(self.key, id_)  # Available since Redis 5.0.0
         encoded_item = dict_[b'item']
-        item = self._decode(encoded_item)
-        return item
+        return self._decode(encoded_item)
 
     def get_nowait(self) -> JSONTypes:
         '''Remove and return an item from the queue without blocking.  O(1)

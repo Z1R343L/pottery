@@ -265,7 +265,7 @@ class TestBloomFilter:
             num_elements=100,
             false_positives=0.01,
         )
-        assert not BaseException in dilberts  # type: ignore
+        assert BaseException not in dilberts
 
     @staticmethod
     def test_repr(redis: Redis) -> None:

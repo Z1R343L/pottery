@@ -93,8 +93,7 @@ async def test_contention(num_aioids: int) -> None:
         done, _ = await asyncio.wait(tasks)
         results = []
         with contextlib.suppress(QuorumNotAchieved):
-            for task in done:
-                results.append(task.result())
+            results.extend(task.result() for task in done)
         assert len(results) == len(set(results))
         # To see the following output, issue:
         # $ source venv/bin/activate; pytest -rP tests/test_aionextid.py::test_contention; deactivate

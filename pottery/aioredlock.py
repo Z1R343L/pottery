@@ -209,15 +209,15 @@ class AIORedlock(Scripts, AIOPrimitive):
         return bool(acquired)
 
     async def __acquired_master(self, master: AIORedis) -> int:  # type: ignore
-        if self._uuid:
-            ttl: int = await self._acquired_script(  # type: ignore
+        return (
+            await self._acquired_script(  # type: ignore
                 keys=(self.key,),
                 args=(self._uuid,),
                 client=master,
             )
-        else:
-            ttl = 0
-        return ttl
+            if self._uuid
+            else 0
+        )
 
     async def __extend_master(self, master: AIORedis) -> bool:
         auto_release_time_ms = int(self.auto_release_time * 1000)

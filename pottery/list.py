@@ -94,8 +94,7 @@ class RedisList(Container, collections.abc.MutableSequence):
                   pipeline: Pipeline,
                   iterable: Iterable[JSONTypes] = tuple(),
                   ) -> None:
-        encoded_values = [self._encode(value) for value in iterable]
-        if encoded_values:
+        if encoded_values := [self._encode(value) for value in iterable]:
             if len(encoded_values) > 1:
                 warnings.warn(
                     cast(str, InefficientAccessWarning.__doc__),
@@ -367,7 +366,6 @@ class RedisList(Container, collections.abc.MutableSequence):
                 cast(str, InefficientAccessWarning.__doc__),
                 InefficientAccessWarning,
             )
-        values = [self._decode(value) for value in encoded]
-        return values
+        return [self._decode(value) for value in encoded]
 
     __to_list = to_list

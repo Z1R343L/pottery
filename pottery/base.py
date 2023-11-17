@@ -144,8 +144,7 @@ class _Encodable:
     @final
     @staticmethod
     def _encode(decoded_value: JSONTypes) -> str:
-        encoded_value = json.dumps(decoded_value, sort_keys=True)
-        return encoded_value
+        return json.dumps(decoded_value, sort_keys=True)
 
     @final
     @staticmethod
@@ -218,8 +217,7 @@ class _Pipelined(abc.ABC):
                 redis_clients[connection].append(container)
         for containers in redis_clients.values():
             keys = (container.key for container in containers)
-            pipeline = containers[0].__watch_keys(*keys)
-            yield pipeline
+            yield containers[0].__watch_keys(*keys)
 
     @final
     @contextlib.contextmanager
